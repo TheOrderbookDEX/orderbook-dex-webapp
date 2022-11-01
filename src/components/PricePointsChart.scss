@@ -1,0 +1,49 @@
+@use "sass:color";
+@import "../variables";
+
+.orderbook-chart {
+  font-family: $font-family-monospace;
+  font-size: $font-size-sm;
+  white-space: nowrap;
+  margin-bottom: 0;
+  > * {
+    border-bottom-width: 1px;
+  }
+  tr > :first-child ~ * {
+    text-align: right;
+  }
+  tr > * {
+    padding: $spacer * .25;
+  }
+  td {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  tr > :first-child {
+    padding-left: $spacer;
+  }
+  tr > :last-child {
+    padding-right: $spacer;
+  }
+  th, div {
+    color: $text-muted;
+    font-weight: normal;
+  }
+  @mixin row($color) {
+    $bg-color: color.change($color, $alpha: .2);
+    tr {
+      background-image: linear-gradient($bg-color, $bg-color);
+      background-position: 100%;
+      background-repeat: no-repeat;
+    }
+    td:first-child {
+      color: $color;
+    }
+  }
+  .sell {
+    @include row($danger);
+  }
+  .buy {
+    @include row($success);
+  }
+}

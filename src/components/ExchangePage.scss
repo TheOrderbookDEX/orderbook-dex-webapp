@@ -1,0 +1,51 @@
+@import "../variables";
+@import "../mixins";
+
+.exchange-page {
+  // orderbooks list and trade form
+  & > :nth-child(1) {
+    @include media-breakpoint-up(md) {
+      border-bottom: var(--#{$prefix}border-width) var(--#{$prefix}border-style) var(--#{$prefix}border-color) !important;
+    }
+    @include media-breakpoint-up(xl) {
+      border-bottom: 0 !important;
+    }
+    // orderbook list
+    & > :nth-child(1) {
+      border-bottom: var(--#{$prefix}border-width) var(--#{$prefix}border-style) var(--#{$prefix}border-color) !important;
+      @include media-breakpoint-up(md) {
+        border-bottom: 0 !important;
+        border-right: var(--#{$prefix}border-width) var(--#{$prefix}border-style) var(--#{$prefix}border-color) !important;
+      }
+      @include media-breakpoint-up(xl) {
+        border-right: 0 !important;
+        border-bottom: var(--#{$prefix}border-width) var(--#{$prefix}border-style) var(--#{$prefix}border-color) !important;
+      }
+    }
+    // trade form (might not be present)
+    & > :nth-child(2) {
+      border-bottom: var(--#{$prefix}border-width) var(--#{$prefix}border-style) var(--#{$prefix}border-color) !important;
+      @include media-breakpoint-up(md) {
+        border-bottom: 0 !important;
+      }
+      @include media-breakpoint-up(xl) {
+        border-bottom: var(--#{$prefix}border-width) var(--#{$prefix}border-style) var(--#{$prefix}border-color) !important;
+      }
+    }
+  }
+  // orderbook header, candlestick graph, orderbook chart and order list
+  & > :nth-child(2) {
+    @include media-breakpoint-up(xl) {
+      border-right: var(--#{$prefix}border-width) var(--#{$prefix}border-style) var(--#{$prefix}border-color) !important;
+    }
+    // candlestick graph, orderbook chart and order list
+    & > :nth-child(2) {
+      // orderbook chart
+      & > :nth-child(2) {
+        @include media-breakpoint-up(lg) {
+          border-right: var(--#{$prefix}border-width) var(--#{$prefix}border-style) var(--#{$prefix}border-color) !important;
+        }
+      }
+    }
+  }
+}

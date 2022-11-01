@@ -1,0 +1,44 @@
+@import "../variables";
+@import "../mixins";
+
+.orders-list {
+  margin-top: -1px;
+  .table-responsive {
+    max-height: 20em;
+    overflow: auto;
+    thead {
+      position: sticky;
+      top: 0;
+      background: $body-bg;
+    }
+  }
+  table {
+    font-family: $font-family-monospace;
+    font-size: 12px;
+    @include media-breakpoint-up(md) {
+      font-size: $font-size-sm;
+    }
+    white-space: nowrap;
+  }
+  td:first-child, td:nth-child(3) {
+    white-space: normal;
+    hyphens: none;
+  }
+  tr > :nth-child(4) ~ * {
+    text-align: right;
+  }
+  tr > * {
+    padding: ($spacer * .5) ($spacer * .25);
+  }
+  tr > :first-child {
+    padding-left: $spacer;
+  }
+  tr > :last-child {
+    padding-right: $spacer;
+  }
+  th {
+    color: $text-muted;
+    font-size: 12px;
+    font-weight: normal;
+  }
+}

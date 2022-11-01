@@ -4,17 +4,11 @@
 
 This is the repo for the web app of *The Orderbook DEX*.
 
-## Wait. Where is the source code?
-
-Well... we made a mistake, we used a commercially licensed piece of code while developing the app, therefore we cannot release its source code **as it is right now**.
-
-We are working on a **full redesign** of the app which will not have this issue, but since that will take quite a while to be ready, we decided to go ahead and use this version of the app **to test the smart contracts** of the DEX.
-
 ## What is currently missing from the app?
 
 * A better UX
 
-  > We are working on it.
+  > We are working on a **full redesign** of the app which will improve the UX.
 
 * A way to create orderbooks
 

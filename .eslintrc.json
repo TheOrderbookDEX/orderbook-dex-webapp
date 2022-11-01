@@ -1,0 +1,13 @@
+{
+  "root": true,
+  "extends": [
+    "react-app",
+    "react-app/jest"
+  ],
+  "parserOptions": {
+    "project": "tsconfig.json"
+  },
+  "rules": {
+    "@typescript-eslint/no-floating-promises": "error"
+  }
+}

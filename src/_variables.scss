@@ -1,0 +1,35 @@
+@import "../node_modules/bootstrap/scss/functions";
+
+$font-family-sans-serif: 'Roboto Flex', sans-serif;
+$font-family-monospace: 'Inconsolata', monospace;
+$body-color: #fff;
+$body-bg: #141414;
+$text-muted: #A6A6A6;
+$primary: #0d6efd;
+$secondary: #212529;
+$border-color: $secondary;
+$dropdown-border-color: $border-color;
+$table-border-color: $border-color;
+$table-accent-bg: transparent;
+$table-border-width: 0;
+$modal-content-bg: #181818;
+$modal-header-border-color: #333;
+$nav-tabs-border-width: 0;
+$nav-tabs-border-radius: 0;
+$list-group-border-color: $border-color;
+$list-group-bg: $body-bg;
+$list-group-active-bg: $primary;
+$enable-negative-margins: true;
+$enable-validation-icons: false;
+$enable-caret: false;
+$enable-rfs: false;
+
+$input-color: $body-color;
+$input-group-addon-color: $body-color;
+$input-bg: $secondary;
+$input-group-addon-bg: $secondary;
+$input-border-color: $secondary;
+$input-group-addon-border-color: $secondary;
+
+@import "../node_modules/bootswatch/dist/slate/variables";
+@import "../node_modules/bootstrap/scss/variables";

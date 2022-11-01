@@ -1,0 +1,22 @@
+@import "../variables";
+
+.price-history-chart {
+  padding-top: $spacer;
+  font-family: $font-family-monospace;
+  border-bottom: 1px solid $secondary;
+  .nav {
+    margin: 0 $spacer;
+    align-items: center;
+  }
+  .nav-link {
+    padding: 0;
+    margin-right: $spacer;
+  }
+  .nav-link.active {
+    color: $primary;
+  }
+  & > :last-child {
+    margin-bottom: -40px;
+    overflow: hidden;
+  }
+}

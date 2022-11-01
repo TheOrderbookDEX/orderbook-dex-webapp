@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&family=Roboto+Flex:opsz,wght@8..144,300&display=swap');
+
+@import "variables";
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../node_modules/bootswatch/dist/slate/bootswatch";
+
+.nav-tabs {
+  background: $secondary;
+  border-top: 1px solid $secondary;
+  border-bottom: 1px solid $secondary;
+  .nav-link {
+    border: 0;
+    color: $text-muted !important;
+    background: transparent !important;
+    &.active {
+      color: $body-color !important;
+      background: $body-bg !important;
+    }
+  }
+}
+
+.list-group-item-action:hover {
+  background-color: var(--#{$prefix}list-group-action-hover-bg);
+}
+
+.list-group-item.active {
+  background-color: var(--#{$prefix}list-group-active-bg);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}

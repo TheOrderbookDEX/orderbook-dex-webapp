@@ -1,0 +1,40 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Install",
+			"type": "shell",
+			"command": "npm install --no-save"
+		},
+		{
+			"label": "Build",
+			"type": "npm",
+			"script": "build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Test",
+			"type": "npm",
+			"script": "test",
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Lint",
+			"type": "npm",
+			"script": "lint",
+			"problemMatcher": "$eslint-stylish"
+		},
+		{
+			"label": "Type Check",
+			"type": "npm",
+			"script": "typecheck",
+			"problemMatcher": "$tsc",
+		}
+	]
+}

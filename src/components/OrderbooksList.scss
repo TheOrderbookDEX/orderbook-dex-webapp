@@ -1,0 +1,44 @@
+@import "../variables";
+
+.orderbooks-list {
+  font-family: $font-family-monospace;
+  font-size: $font-size-sm;
+  padding: $spacer;
+  .input-group {
+    margin-bottom: $spacer;
+  }
+  .nav {
+    margin: 0 (-$spacer);
+  }
+  .table-responsive {
+    margin: 0 (-$spacer);
+    max-height: 20em;
+    overflow: auto;
+    thead {
+      position: sticky;
+      top: 0;
+      background: $body-bg;
+    }
+  }
+  th {
+    color: $text-muted;
+    font-weight: normal;
+    white-space: nowrap;
+    font-size: 12px;
+  }
+  tr > :nth-child(2) ~ * {
+    text-align: right;
+  }
+  tr > * {
+    padding: ($spacer * .5) ($spacer * .25);
+  }
+  tr > :first-child {
+    padding-left: $spacer;
+  }
+  tr > :last-child {
+    padding-right: $spacer;
+  }
+  tbody > tr {
+    cursor: pointer;
+  }
+}
