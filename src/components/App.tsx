@@ -10,6 +10,7 @@ import OperatorPage from './OperatorPage';
 import Notfound from './PageNotFound';
 import RequiresWallet from './RequiresWallet';
 import { Row, Stack } from 'react-bootstrap';
+import CreateOrderbookPage from './CreateOrderbookPage';
 
 export default function App() {
   return (
@@ -25,6 +26,11 @@ export default function App() {
                   <Route path="/operator" element={
                     <RequiresWallet>
                       <OperatorPage />
+                    </RequiresWallet>
+                  } />
+                  <Route path="/create-orderbook" element={
+                    <RequiresWallet>
+                      <CreateOrderbookPage />
                     </RequiresWallet>
                   } />
                   <Route path="*" element={<Notfound />} />

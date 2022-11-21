@@ -30,6 +30,8 @@ $input-bg: $secondary;
 $input-group-addon-bg: $secondary;
 $input-border-color: $secondary;
 $input-group-addon-border-color: $secondary;
+$input-disabled-bg: $input-bg;
+$form-select-disabled-bg: $input-bg;
 
 @import "../node_modules/bootswatch/dist/slate/variables";
 @import "../node_modules/bootstrap/scss/variables";

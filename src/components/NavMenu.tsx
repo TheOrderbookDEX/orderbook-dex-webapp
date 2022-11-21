@@ -6,6 +6,7 @@ export default function NavMenu() {
     <Nav className="me-auto">
       <Nav.Link as={Link} to="/" active={!!useMatch('/')}>Exchange</Nav.Link>
       <Nav.Link as={Link} to="/operator" active={!!useMatch('/operator')}>Operator</Nav.Link>
+      <Nav.Link as={Link} to="/create-orderbook" active={!!useMatch('/create-orderbook')}>Create Orderbook</Nav.Link>
     </Nav>
   );
 }
