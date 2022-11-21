@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { Button, Dropdown, Figure, Spinner } from 'react-bootstrap';
 import { WalletContext } from '../context/WalletContext';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { Chain, Wallet } from '@theorderbookdex/orderbook-dex-webapi';
+import { Chain, Operator } from '@theorderbookdex/orderbook-dex-webapi';
 import { formatShorterAddress } from '../utils/format';
 
 export default function UserMenu() {
@@ -12,15 +12,15 @@ export default function UserMenu() {
     return (
       <Dropdown>
         <Dropdown.Toggle className="px-0 py-1" variant="link">
-          <Jazzicon paperStyles={{ verticalAlign: 'middle' }} diameter={30} seed={jsNumberForAddress(Wallet.instance.address)} />
+          <Jazzicon paperStyles={{ verticalAlign: 'middle' }} diameter={30} seed={jsNumberForAddress(Operator.instance.walletAddress)} />
         </Dropdown.Toggle>
         <Dropdown.Menu align="end" className="text-body bg-body">
           <Dropdown.Header>
             <Figure className="text-center d-block mb-0">
-              <Jazzicon diameter={64} seed={jsNumberForAddress(Wallet.instance.address)} />
+              <Jazzicon diameter={64} seed={jsNumberForAddress(Operator.instance.walletAddress)} />
               <Figure.Caption>
                 <div className="fw-bold">{Chain.instance.chainName}</div>
-                <div>{formatShorterAddress(Wallet.instance.address)}</div>
+                <div>{formatShorterAddress(Operator.instance.walletAddress)}</div>
               </Figure.Caption>
             </Figure>
           </Dropdown.Header>

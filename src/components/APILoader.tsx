@@ -1,4 +1,4 @@
-import { Chain, ChainNotSupported, OrderbookDEX, UserData } from '@theorderbookdex/orderbook-dex-webapi';
+import { Chain, ChainNotSupported, OrderbookDEX } from '@theorderbookdex/orderbook-dex-webapi';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { Modal, Spinner } from 'react-bootstrap';
 
@@ -19,7 +19,6 @@ export default function APILoader({ children }: PropsWithChildren<{}>) {
       try {
         await Chain.connect();
         await OrderbookDEX.connect();
-        await UserData.load();
         setReady(true);
 
       } catch (error) {

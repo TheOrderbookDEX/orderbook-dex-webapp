@@ -1,7 +1,7 @@
 import './OrderbooksList.scss';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Form, InputGroup, Nav, Table } from 'react-bootstrap';
-import { Orderbook, OrderbookDEX, Token, UserData } from '@theorderbookdex/orderbook-dex-webapi';
+import { Orderbook, OrderbookDEX, Token } from '@theorderbookdex/orderbook-dex-webapi';
 import OrderbooksListItem from './OrderbooksListItem';
 import { formatOrderbook } from '../utils/format';
 
@@ -50,13 +50,13 @@ export default function OrderbooksList({ onSelect }: OrderbooksListProps) {
 
     void (async () => {
       try {
-        for await (const orderbook of UserData.instance.savedOrderbooks(abortSignal)) {
+        for await (const orderbook of OrderbookDEX.instance.getOrderbooks({ tracked: true }, abortSignal)) {
           setSavedOrderbooks(orderbooks => orderbooks.concat([ orderbook ]));
         }
-        for await (const token of UserData.instance.trackedTokens(abortSignal)) {
+        for await (const token of OrderbookDEX.instance.getTokens(abortSignal)) {
           setTokens(tokens => tokens.concat([ token ]));
         }
-        for await (const orderbook of OrderbookDEX.instance.getOrderbooks(abortController.signal)) {
+        for await (const orderbook of OrderbookDEX.instance.getOrderbooks({}, abortSignal)) {
           setAllOrderbooks(orderbooks => orderbooks.concat([ orderbook ]));
         }
       } catch (error) {
@@ -75,12 +75,12 @@ export default function OrderbooksList({ onSelect }: OrderbooksListProps) {
   }, [ savedOrderbooks ]);
 
   const saveOrderbook = useCallback(async (orderbook: Orderbook) => {
-    await UserData.instance.saveOrderbook(orderbook);
+    await OrderbookDEX.instance.trackOrderbook(orderbook);
     setSavedOrderbooks(orderbooks => orderbooks.concat([orderbook]));
   }, []);
 
   const forgetOrderbook = useCallback(async (orderbook: Orderbook) => {
-    await UserData.instance.forgetOrderbook(orderbook);
+    await OrderbookDEX.instance.forgetOrderbook(orderbook);
     setSavedOrderbooks(orderbooks => orderbooks.filter(o => o !== orderbook));
   }, []);
 

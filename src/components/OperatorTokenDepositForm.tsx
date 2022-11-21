@@ -1,4 +1,4 @@
-import { InsufficientFunds, OperationRejected, Wallet } from '@theorderbookdex/orderbook-dex-webapi';
+import { InsufficientFunds, Operator, RequestRejected } from '@theorderbookdex/orderbook-dex-webapi';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Button, Form, Spinner } from 'react-bootstrap';
 import { TokenWithBalance } from './OperatorPage';
@@ -42,7 +42,7 @@ export default function OperatorTokenDepositForm({ token, onCancel }: OperatorTo
       setFeedback(Feedback.SENDING);
       void (async () => {
         try {
-          await Wallet.instance.deposit(token.data, token.data.parseAmount(amount), abortSignal);
+          await Operator.instance.deposit(token.data, token.data.parseAmount(amount), abortSignal);
           setSending(false);
           setAmount('');
           setValidated(false);
@@ -50,7 +50,7 @@ export default function OperatorTokenDepositForm({ token, onCancel }: OperatorTo
         } catch (error) {
           if (error !== abortSignal.reason) {
             setSending(false);
-            if (error instanceof OperationRejected) {
+            if (error instanceof RequestRejected) {
               setFeedback(Feedback.NONE);
             } else if (error instanceof InsufficientFunds) {
               setFeedback(Feedback.INSUFFICIENT_FUNDS);

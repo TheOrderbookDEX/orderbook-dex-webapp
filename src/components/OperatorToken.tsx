@@ -1,4 +1,4 @@
-import { UserData } from '@theorderbookdex/orderbook-dex-webapi';
+import { OrderbookDEX } from '@theorderbookdex/orderbook-dex-webapi';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Col, Row, Spinner } from 'react-bootstrap';
 import { TokenWithBalance } from './OperatorPage';
@@ -41,7 +41,7 @@ export default function OperatorToken({ token }: { token: TokenWithBalance }) {
     setRemoveStatus(RemoveStatus.REMOVING);
     void (async () => {
       try {
-        await UserData.instance.forgetToken(token.data, abortSignal);
+        await OrderbookDEX.instance.forgetToken(token.data, abortSignal);
         setRemoveStatus(RemoveStatus.REMOVED);
       } catch (error) {
         if (error !== abortSignal.reason) {

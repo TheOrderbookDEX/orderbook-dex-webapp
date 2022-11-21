@@ -1,4 +1,4 @@
-import { Token, UserData, UserDataEventType, Wallet, WalletEventType } from '@theorderbookdex/orderbook-dex-webapi';
+import { Token, OrderbookDEX, Operator, OrderbookDEXEventType, OperatorEventType } from '@theorderbookdex/orderbook-dex-webapi';
 import { useContext, useEffect, useState } from 'react';
 import { Col, Spinner } from 'react-bootstrap';
 import OperatorTokenList from './OperatorTokenList';
@@ -25,9 +25,9 @@ export default function OperatorPage() {
     const abortController = new AbortController();
     const abortSignal = abortController.signal;
 
-    UserData.instance.addEventListener(UserDataEventType.TOKEN_ADDED, async ({ token }) => {
+    OrderbookDEX.instance.addEventListener(OrderbookDEXEventType.TOKEN_ADDED, async ({ token }) => {
       try {
-        const balance = await Wallet.instance.getBalance(token, abortSignal);
+        const balance = await Operator.instance.getBalance(token, abortSignal);
         setTokens(tokens => tokens?.concat([ { data: token, balance } ]));
       } catch (error) {
         if (error !== abortSignal.reason) {
@@ -37,12 +37,12 @@ export default function OperatorPage() {
       }
     }, { signal: abortSignal });
 
-    UserData.instance.addEventListener(UserDataEventType.TOKEN_REMOVED, ({ token }) => {
+    OrderbookDEX.instance.addEventListener(OrderbookDEXEventType.TOKEN_REMOVED, ({ token }) => {
       setTokens(tokens => tokens?.filter(({ data: { address } }) => address !== token.address));
       setSelected(selected => selected?.data.address === token.address ? undefined : selected);
     }, { signal: abortSignal });
 
-    Wallet.instance.addEventListener(WalletEventType.TOKEN_DEPOSITED, ({ token, amount }) => {
+    Operator.instance.addEventListener(OperatorEventType.TOKEN_DEPOSITED, ({ token, amount }) => {
       setTokens(tokens => tokens?.map(({ data, balance }) => data.address === token.address ? {
         data,
         balance: {
@@ -59,7 +59,7 @@ export default function OperatorPage() {
       } : selected);
     }, { signal: abortSignal });
 
-    Wallet.instance.addEventListener(WalletEventType.TOKEN_WITHDRAWN, ({ token, amount }) => {
+    Operator.instance.addEventListener(OperatorEventType.TOKEN_WITHDRAWN, ({ token, amount }) => {
       setTokens(tokens => tokens?.map(({ data, balance }) => data.address === token.address ? {
         data,
         balance: {
@@ -79,10 +79,10 @@ export default function OperatorPage() {
     void (async () => {
       try {
         const tokens = new Array<TokenWithBalance>();
-        for await (const token of UserData.instance.trackedTokens(abortSignal)) {
+        for await (const token of OrderbookDEX.instance.getTokens(abortSignal)) {
           tokens.push({
             data: token,
-            balance: await Wallet.instance.getBalance(token, abortSignal),
+            balance: await Operator.instance.getBalance(token, abortSignal),
           });
         }
         setSelected(tokens[0]);

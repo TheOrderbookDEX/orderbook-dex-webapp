@@ -1,5 +1,5 @@
 import './TradeOperation.scss';
-import { InsufficientFunds, OperationRejected, Orderbook, Wallet, WalletNotConnected } from '@theorderbookdex/orderbook-dex-webapi';
+import { InsufficientFunds, Orderbook, Operator, RequestRejected, OperatorNotConnected } from '@theorderbookdex/orderbook-dex-webapi';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Button, Form, InputGroup, Nav, Spinner } from 'react-bootstrap';
 import { formatContractSize, formatPriceTick, parseContractAmount, parsePrice } from '../utils/format';
@@ -18,7 +18,7 @@ enum Feedback {
   NONE,
   PLACING_ORDER,
   ORDER_SENT,
-  WALLET_NOT_CONNECTED,
+  OPERATOR_NOT_CONNECTED,
   INSUFFICIENT_OPERATOR_FUNDS,
   DEPOSITING_FUNDS,
   FUNDS_DEPOSITED,
@@ -78,20 +78,20 @@ export default function TradeOperation({ orderbook }: TradeOperationProps) {
             case OrderType.LIMIT:
               switch (tradeType) {
                 case TradeType.BUY:
-                  await Wallet.instance.placeBuyOrder(orderbook, orderAmount, orderPrice, abortSignal);
+                  await Operator.instance.placeBuyOrder(orderbook, orderAmount, orderPrice, abortSignal);
                   break;
                 case TradeType.SELL:
-                  await Wallet.instance.placeSellOrder(orderbook, orderAmount, orderPrice, abortSignal);
+                  await Operator.instance.placeSellOrder(orderbook, orderAmount, orderPrice, abortSignal);
                   break;
               }
               break;
             case OrderType.MARKET:
               switch (tradeType) {
                 case TradeType.BUY:
-                  await Wallet.instance.buyAtMarket(orderbook, orderAmount, orderPrice, abortSignal);
+                  await Operator.instance.buyAtMarket(orderbook, orderAmount, orderPrice, abortSignal);
                   break;
                 case TradeType.SELL:
-                  await Wallet.instance.sellAtMarket(orderbook, orderAmount, orderPrice, abortSignal);
+                  await Operator.instance.sellAtMarket(orderbook, orderAmount, orderPrice, abortSignal);
                   break;
               }
               break;
@@ -105,11 +105,11 @@ export default function TradeOperation({ orderbook }: TradeOperationProps) {
           if (error !== abortSignal.reason) {
             setSending(false);
 
-            if (error instanceof OperationRejected) {
+            if (error instanceof RequestRejected) {
               setFeedback(Feedback.NONE);
 
-            } else if (error instanceof WalletNotConnected) {
-              setFeedback(Feedback.WALLET_NOT_CONNECTED);
+            } else if (error instanceof OperatorNotConnected) {
+              setFeedback(Feedback.OPERATOR_NOT_CONNECTED);
 
             } else if (error instanceof InsufficientFunds) {
               setFeedback(Feedback.INSUFFICIENT_OPERATOR_FUNDS);
@@ -147,17 +147,17 @@ export default function TradeOperation({ orderbook }: TradeOperationProps) {
         switch (tradeType) {
           case TradeType.BUY: {
             const requiredAmount = tradedToken.parseAmount(amount) * baseToken.parseAmount(price) / tradedToken.unit;
-            const missingAmount = requiredAmount - (await Wallet.instance.getBalance(baseToken, abortSignal)).operator;
+            const missingAmount = requiredAmount - (await Operator.instance.getBalance(baseToken, abortSignal)).operator;
             if (missingAmount > 0n) {
-              await Wallet.instance.deposit(baseToken, missingAmount, abortSignal);
+              await Operator.instance.deposit(baseToken, missingAmount, abortSignal);
             }
             break;
           }
           case TradeType.SELL: {
             const requiredAmount = tradedToken.parseAmount(amount);
-            const missingAmount = requiredAmount - (await Wallet.instance.getBalance(tradedToken, abortSignal)).operator;
+            const missingAmount = requiredAmount - (await Operator.instance.getBalance(tradedToken, abortSignal)).operator;
             if (missingAmount > 0n) {
-              await Wallet.instance.deposit(tradedToken, missingAmount, abortSignal);
+              await Operator.instance.deposit(tradedToken, missingAmount, abortSignal);
             }
             break;
           }
@@ -169,14 +169,14 @@ export default function TradeOperation({ orderbook }: TradeOperationProps) {
         if (error !== abortSignal.reason) {
           setSending(false);
 
-          if (error instanceof OperationRejected) {
+          if (error instanceof RequestRejected) {
             setFeedback(Feedback.NONE);
 
-          } else if (error instanceof WalletNotConnected) {
-            setFeedback(Feedback.WALLET_NOT_CONNECTED);
+          } else if (error instanceof OperatorNotConnected) {
+            setFeedback(Feedback.OPERATOR_NOT_CONNECTED);
 
-            } else if (error instanceof InsufficientFunds) {
-              setFeedback(Feedback.INSUFFICIENT_WALLET_FUNDS);
+          } else if (error instanceof InsufficientFunds) {
+            setFeedback(Feedback.INSUFFICIENT_WALLET_FUNDS);
 
           } else {
             console.error(error);
@@ -259,7 +259,7 @@ export default function TradeOperation({ orderbook }: TradeOperationProps) {
         : feedback === Feedback.FUNDS_DEPOSITED ?
           <Alert variant="success" className="mt-3">Funds deposited</Alert>
 
-        : feedback === Feedback.WALLET_NOT_CONNECTED ?
+        : feedback === Feedback.OPERATOR_NOT_CONNECTED ?
           <Alert variant="warning" className="mt-3">Please connect your wallet and try again</Alert>
 
         : feedback === Feedback.INSUFFICIENT_OPERATOR_FUNDS ?

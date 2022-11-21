@@ -1,4 +1,4 @@
-import { RegisterRejected, RegisterRequired, Wallet as WalletAPI, WalletAddressNotFound, WalletConnectionRejected } from '@theorderbookdex/orderbook-dex-webapi';
+import { Operator as OperatorAPI, OperatorNotCreated, RequestRejected, WalletAddressNotFound } from '@theorderbookdex/orderbook-dex-webapi';
 import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
@@ -37,17 +37,17 @@ export function WalletProvider({ children }: PropsWithChildren<{}>) {
     async connect() {
       try {
         setWalletState(state => ({ ...state, connecting: true }));
-        await WalletAPI.connect();
+        await OperatorAPI.connect();
         setWalletState(state => ({ ...state, connecting: false, connected: true }));
 
       } catch (error) {
-        if (error instanceof RegisterRequired) {
+        if (error instanceof OperatorNotCreated) {
           setWalletState(state => ({ ...state, connecting: false }));
           setFeedback(Feedback.REGISTER_REQUIRED);
 
         } else {
           setWalletState(state => ({ ...state, connecting: false }));
-          if (error instanceof WalletConnectionRejected) {
+          if (error instanceof RequestRejected) {
             // ignore error
 
           } else if (error instanceof WalletAddressNotFound) {
@@ -71,12 +71,12 @@ export function WalletProvider({ children }: PropsWithChildren<{}>) {
       try {
         setFeedback(Feedback.NONE);
         setWalletState(state => ({ ...state, connecting: true }));
-        await WalletAPI.register();
+        await OperatorAPI.create();
         setWalletState(state => ({ ...state, connecting: false, connected: true }));
 
       } catch (error) {
         setWalletState(state => ({ ...state, connecting: false }));
-        if (error instanceof RegisterRejected) {
+        if (error instanceof RequestRejected) {
           // ignore error
 
         } else if (error instanceof WalletAddressNotFound) {
@@ -94,7 +94,7 @@ export function WalletProvider({ children }: PropsWithChildren<{}>) {
     void (async function() {
       try {
         setWalletState(state => ({ ...state, connecting: true }));
-        await WalletAPI.connect(false);
+        await OperatorAPI.connect(false);
         setWalletState(state => ({ ...state, connecting: false, connected: true }));
 
       } catch (error) {

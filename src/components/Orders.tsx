@@ -1,5 +1,5 @@
 import './Orders.scss';
-import { OperationRejected, Order, OrderStatus, Wallet, WalletEventType } from '@theorderbookdex/orderbook-dex-webapi';
+import { Operator, OperatorEventType, Order, OrderStatus, RequestRejected } from '@theorderbookdex/orderbook-dex-webapi';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Dropdown, Nav, Table } from 'react-bootstrap';
 import { WalletContext } from '../context/WalletContext';
@@ -94,7 +94,7 @@ export default function Orders() {
     const abortController = new AbortController();
     const abortSignal = abortController.signal;
 
-    Wallet.instance.addEventListener(WalletEventType.ORDER_CREATED, ({ order }) => {
+    Operator.instance.addEventListener(OperatorEventType.ORDER_CREATED, ({ order }) => {
       switch (tab) {
         case OrdersTab.RECENT:
           setOrders(orders => addOrder(orders, order));
@@ -114,7 +114,7 @@ export default function Orders() {
       }
     }, { signal: abortSignal });
 
-    Wallet.instance.addEventListener(WalletEventType.ORDER_UPDATED, ({ order }) => {
+    Operator.instance.addEventListener(OperatorEventType.ORDER_UPDATED, ({ order }) => {
       switch (tab) {
         case OrdersTab.RECENT:
           setOrders(orders => updateOrder(orders, order));
@@ -138,7 +138,7 @@ export default function Orders() {
       }
     }, { signal: abortSignal });
 
-    Wallet.instance.addEventListener(WalletEventType.ORDER_REMOVED, ({ order }) => {
+    Operator.instance.addEventListener(OperatorEventType.ORDER_REMOVED, ({ order }) => {
       setOrders(orders => removeOrder(orders, order));
     }, { signal: abortSignal });
 
@@ -149,15 +149,15 @@ export default function Orders() {
         let orders: AsyncIterable<Order>;
         switch (tab) {
           case OrdersTab.RECENT:
-            orders = Wallet.instance.recentOrders(5, abortSignal);
+            orders = Operator.instance.recentOrders(5, abortSignal);
             break;
 
           case OrdersTab.OPEN:
-            orders = Wallet.instance.openOrders(abortSignal);
+            orders = Operator.instance.openOrders(abortSignal);
             break;
 
           case OrdersTab.CLOSED:
-            orders = Wallet.instance.closedOrders(abortSignal);
+            orders = Operator.instance.closedOrders(abortSignal);
             break;
         }
         for await (const order of orders) {
@@ -181,14 +181,14 @@ export default function Orders() {
     setSending(true);
     void (async () => {
       try {
-        await Wallet.instance.claimOrder(order, abortSignal);
+        await Operator.instance.claimOrder(order, abortSignal);
         setSending(false);
 
       } catch (error) {
         if (error !== abortSignal.reason) {
           setSending(false);
 
-          if (error instanceof OperationRejected) {
+          if (error instanceof RequestRejected) {
             // ignore
 
           } else {
@@ -205,14 +205,14 @@ export default function Orders() {
     setSending(true);
     void (async () => {
       try {
-        await Wallet.instance.cancelOrder(order, abortSignal);
+        await Operator.instance.cancelOrder(order, abortSignal);
         setSending(false);
 
       } catch (error) {
         if (error !== abortSignal.reason) {
           setSending(false);
 
-          if (error instanceof OperationRejected) {
+          if (error instanceof RequestRejected) {
             // ignore
 
           } else {
@@ -229,7 +229,7 @@ export default function Orders() {
     setSending(true);
     void (async () => {
       try {
-        await Wallet.instance.dismissOrder(order, abortSignal);
+        await Operator.instance.dismissOrder(order, abortSignal);
         setSending(false);
 
       } catch (error) {

@@ -1,4 +1,4 @@
-import { Chain, OrderbookDEX, UserData, Wallet } from '@theorderbookdex/orderbook-dex-webapi';
+import { Chain, OrderbookDEX, Operator } from '@theorderbookdex/orderbook-dex-webapi';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 
@@ -17,8 +17,7 @@ export default function SingleInstanceMutex({ children }: PropsWithChildren<{}>)
     broadcastChannel.addEventListener('message', event => {
       if (event.data === Message.STARTUP) {
         setLockedOut(true);
-        try { Wallet.disconnect();       } catch (error) { console.error(error); }
-        try { UserData.unload();         } catch (error) { console.error(error); }
+        try { Operator.disconnect();     } catch (error) { console.error(error); }
         try { OrderbookDEX.disconnect(); } catch (error) { console.error(error); }
         try { Chain.disconnect();        } catch (error) { console.error(error); }
       }

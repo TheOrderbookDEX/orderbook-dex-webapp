@@ -1,4 +1,4 @@
-import { Address, NotAnERC20Token, OrderbookDEX, UserData } from '@theorderbookdex/orderbook-dex-webapi';
+import { Address, NotAnERC20Token, OrderbookDEX } from '@theorderbookdex/orderbook-dex-webapi';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Button, Form, Spinner } from 'react-bootstrap'
 
@@ -38,7 +38,7 @@ export default function OperatorAddTokenForm() {
         try {
           const token = await OrderbookDEX.instance.getToken(tokenAddress as Address, abortSignal);
           // TODO preview token info before adding
-          await UserData.instance.trackToken(token, abortSignal);
+          await OrderbookDEX.instance.trackToken(token, abortSignal);
           setSaving(false);
           setTokenAddress('');
           setValidated(false);
