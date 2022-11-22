@@ -80,6 +80,10 @@ export default function OperatorPage() {
       const updatedBalance = await Operator.instance.getBalance(token, abortSignal);
       setTokens(tokens => tokens?.map(({ data, balance }) =>
         data.address === token.address ? { data, balance: updatedBalance } : { data, balance }));
+      setSelected(selected => selected?.data.address === token.address ? {
+        data: selected.data,
+        balance: updatedBalance,
+      } : selected);
     }, { signal: abortSignal });
 
     void (async () => {

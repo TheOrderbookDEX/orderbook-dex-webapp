@@ -13,8 +13,13 @@ export default function OperatorTokenList({
   return (
     <ListGroup variant="flush" className="font-monospace border-bottom lh-sm">
       {tokens.map(token =>
-        <ListGroup.Item key={token.data.address} action active={token === selected} onClick={() => onSelect(token)}
-          className="d-flex justify-content-between align-items-center p-3 pb-4">
+        <ListGroup.Item
+          key={token.data.address}
+          action
+          active={token.data.address === selected?.data.address}
+          onClick={() => onSelect(token)}
+          className="d-flex justify-content-between align-items-center p-3 pb-4"
+        >
           <div>
             <div className="fs-2">{token.data.symbol}</div>
             <div>{token.data.name}</div>
