@@ -15,8 +15,8 @@ export default function PricePointsChart({ orderbook }: PricePointsChartProps) {
   const [ loading, setLoading ] = useState(false);
   const [ lastPrice, setLastPrice ] = useState('');
   const [ priceChange, setPriceChange ] = useState<number>();
-  const [ buy, setBuy ] = useState<PricePoint[]>([]);
-  const [ sell, setSell ] = useState<PricePoint[]>([]);
+  const [ buy, setBuy ] = useState<readonly PricePoint[]>([]);
+  const [ sell, setSell ] = useState<readonly PricePoint[]>([]);
 
   useEffect(() => {
     if (!orderbook) return;

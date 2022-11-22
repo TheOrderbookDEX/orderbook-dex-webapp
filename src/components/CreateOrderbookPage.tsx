@@ -1,4 +1,4 @@
-import { Token, OrderbookDEX, RequestRejected } from '@theorderbookdex/orderbook-dex-webapi';
+import { Token, OrderbookDEX, RequestRejected, Operator } from '@theorderbookdex/orderbook-dex-webapi';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Button, Col, Form, InputGroup, Spinner } from 'react-bootstrap';
 
@@ -61,7 +61,7 @@ export default function CreateOrderbookPage() {
           const actualContractSize = tradedToken.parseAmount(contractSize);
           const actualPriceTick = baseToken.parseAmount(priceTick) * actualContractSize / tradedToken.unit;
 
-          const orderbook = await OrderbookDEX.instance.createOrderbook({
+          const orderbook = await Operator.instance.createOrderbook({
             tradedToken,
             baseToken,
             contractSize: actualContractSize,
