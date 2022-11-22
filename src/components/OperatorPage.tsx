@@ -76,6 +76,12 @@ export default function OperatorPage() {
       } : selected);
     }, { signal: abortSignal });
 
+    Operator.instance.addEventListener(OperatorEventType.FAUCET_USED, async ({ token }) => {
+      const updatedBalance = await Operator.instance.getBalance(token, abortSignal);
+      setTokens(tokens => tokens?.map(({ data, balance }) =>
+        data.address === token.address ? { data, balance: updatedBalance } : { data, balance }));
+    }, { signal: abortSignal });
+
     void (async () => {
       try {
         const tokens = new Array<TokenWithBalance>();
