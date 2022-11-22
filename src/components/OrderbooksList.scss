@@ -7,12 +7,9 @@
   .input-group {
     margin-bottom: $spacer;
   }
-  .nav {
-    margin: 0 (-$spacer);
-  }
   .table-responsive {
     margin: 0 (-$spacer);
-    max-height: 20em;
+    max-height: 25em;
     overflow: auto;
     thead {
       position: sticky;

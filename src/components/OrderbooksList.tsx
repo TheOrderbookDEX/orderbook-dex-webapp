@@ -1,64 +1,56 @@
 import './OrderbooksList.scss';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Form, InputGroup, Nav, Table } from 'react-bootstrap';
-import { Orderbook, OrderbookDEX, Token } from '@theorderbookdex/orderbook-dex-webapi';
+import { Form, InputGroup, Spinner, Table } from 'react-bootstrap';
+import { Orderbook, OrderbookDEX } from '@theorderbookdex/orderbook-dex-webapi';
 import OrderbooksListItem from './OrderbooksListItem';
-import { formatOrderbook } from '../utils/format';
+import { OrderbooksFilter, OrderbooksFilterModal } from './OrderbooksFilterModal';
 
 interface OrderbooksListProps {
   onSelect: (orderbook: Orderbook) => void;
 }
 
 export default function OrderbooksList({ onSelect }: OrderbooksListProps) {
-  const [ search, setSearch ] = useState('');
-  const [ token, setToken ] = useState('');
-  const [ savedOrderbooks, setSavedOrderbooks ] = useState<Orderbook[]>([]);
-  const [ tokens, setTokens ] = useState<Token[]>([]);
-  const [ allOrderbooks, setAllOrderbooks ] = useState<Orderbook[]>([]);
+  const [ showFilterModal, setShowFilterModal ] = useState(false);
+  const [ filter, setFilter ] = useState<OrderbooksFilter>({ tracked: true });
+  const [ loading, setLoading ] = useState(true);
+  const [ orderbooks, setOrderbooks ] = useState<{[address: string]: Orderbook}>({});
 
-  const orderbooks = useMemo(() => {
-    if (search) {
-      const orderbooks: Orderbook[] = [];
-      for (const orderbook of allOrderbooks) {
-        if (formatOrderbook(orderbook).toLowerCase().includes(search.toLowerCase())) {
-          orderbooks.push(orderbook);
-        }
-      }
-      return orderbooks;
+  const search = useMemo(() => {
+    const search: string[] = [];
 
-    } else if (token) {
-      const orderbooks: Orderbook[] = [];
-      for (const orderbook of allOrderbooks) {
-        if (orderbook.tradedToken.address === token || orderbook.baseToken.address === token) {
-          orderbooks.push(orderbook);
-        }
-      }
-      return orderbooks;
-
-    } else {
-      return savedOrderbooks;
+    if (filter.tracked) {
+      search.push('Only ★');
     }
-  }, [ search, token, savedOrderbooks, allOrderbooks ]);
+
+    if (filter.tradedToken) {
+      search.push(`Trade ${filter.tradedToken.symbol}`);
+    }
+
+    if (filter.baseToken) {
+      search.push(`Price in ${filter.baseToken.symbol}`);
+    }
+
+    return search.join(', ');
+  }, [ filter ]);
 
   useEffect(() => {
-    setSavedOrderbooks([]);
-    setTokens([]);
-    setAllOrderbooks([]);
+    setLoading(true);
+    setOrderbooks({});
 
     const abortController = new AbortController();
     const abortSignal = abortController.signal;
 
     void (async () => {
       try {
-        for await (const orderbook of OrderbookDEX.instance.getOrderbooks({ tracked: true }, abortSignal)) {
-          setSavedOrderbooks(orderbooks => orderbooks.concat([ orderbook ]));
+        for await (const orderbook of OrderbookDEX.instance.getOrderbooks({
+          tracked: filter.tracked,
+          tradedToken: filter.tradedToken?.address,
+          baseToken: filter.baseToken?.address,
+        }, abortSignal)) {
+          setOrderbooks(orderbooks => ({ ...orderbooks, [orderbook.address]: orderbook }));
         }
-        for await (const token of OrderbookDEX.instance.getTokens(abortSignal)) {
-          setTokens(tokens => tokens.concat([ token ]));
-        }
-        for await (const orderbook of OrderbookDEX.instance.getOrderbooks({}, abortSignal)) {
-          setAllOrderbooks(orderbooks => orderbooks.concat([ orderbook ]));
-        }
+        setLoading(false);
+
       } catch (error) {
         if (error !== abortController.signal.reason) {
           // TODO handle other errors
@@ -68,34 +60,45 @@ export default function OrderbooksList({ onSelect }: OrderbooksListProps) {
     })();
 
     return () => abortController.abort();
-  }, []);
+  }, [ filter ]);
 
-  const isSaved = useCallback((orderbook: Orderbook) => {
-    return savedOrderbooks.some(({ address }) => address === orderbook.address);
-  }, [ savedOrderbooks ]);
+  const trackOrderbook = useCallback(async (orderbook: Orderbook) => {
+    const abortController = new AbortController();
+    const abortSignal = abortController.signal;
 
-  const saveOrderbook = useCallback(async (orderbook: Orderbook) => {
-    await OrderbookDEX.instance.trackOrderbook(orderbook);
-    setSavedOrderbooks(orderbooks => orderbooks.concat([orderbook]));
+    await OrderbookDEX.instance.trackOrderbook(orderbook, abortSignal);
+    orderbook = await OrderbookDEX.instance.getOrderbook(orderbook.address, abortSignal);
+    setOrderbooks(orderbooks => ({ ...orderbooks, [orderbook.address]: orderbook }));
   }, []);
 
   const forgetOrderbook = useCallback(async (orderbook: Orderbook) => {
+    const abortController = new AbortController();
+    const abortSignal = abortController.signal;
+
     await OrderbookDEX.instance.forgetOrderbook(orderbook);
-    setSavedOrderbooks(orderbooks => orderbooks.filter(o => o !== orderbook));
+    orderbook = await OrderbookDEX.instance.getOrderbook(orderbook.address, abortSignal);
+    setOrderbooks(orderbooks => ({ ...orderbooks, [orderbook.address]: orderbook }));
   }, []);
 
   return (
     <div className="orderbooks-list">
       <InputGroup size="sm">
         <InputGroup.Text>🔍︎</InputGroup.Text>
-        <Form.Control placeholder="Search" value={search} onChange={event => setSearch(event.target.value)} />
+        <Form.Control
+          readOnly
+          placeholder="Search"
+          value={search}
+          onFocus={event => { event.target.blur(); setShowFilterModal(true) }}
+        />
       </InputGroup>
-      <Nav variant="tabs" activeKey={token} onSelect={token => setToken(token as string)}>
-        <Nav.Link eventKey="">★</Nav.Link>
-        {tokens.map(token => (
-          <Nav.Link key={token.address} eventKey={token.address}>{token.symbol}</Nav.Link>
-        ))}
-      </Nav>
+
+      <OrderbooksFilterModal
+        filter={filter}
+        onChange={setFilter}
+        show={showFilterModal}
+        onHide={() => setShowFilterModal(false)}
+      />
+
       <Table responsive hover>
         <thead>
           <tr>
@@ -106,15 +109,21 @@ export default function OrderbooksList({ onSelect }: OrderbooksListProps) {
           </tr>
         </thead>
         <tbody>
-          {orderbooks.map(orderbook => (
+          {Object.values(orderbooks).map(orderbook => (
             <OrderbooksListItem
               key={`${orderbook.address}`}
               orderbook={orderbook}
-              saved={isSaved(orderbook)}
               onSelect={onSelect}
-              onSave={saveOrderbook}
+              onTrack={trackOrderbook}
               onForget={forgetOrderbook} />
           ))}
+          {loading &&
+            <tr>
+              <td colSpan={4} className="text-center">
+                <Spinner animation="border" />
+              </td>
+            </tr>
+          }
         </tbody>
       </Table>
     </div>

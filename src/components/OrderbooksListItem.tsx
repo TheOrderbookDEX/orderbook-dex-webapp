@@ -4,13 +4,12 @@ import { formatOrderbook, formatPrice, formatPriceChange, priceChangeStyle } fro
 
 interface OrderbooksListItemProps {
   orderbook: Orderbook;
-  saved: boolean;
   onSelect: (orderbook: Orderbook) => void;
-  onSave: (orderbook: Orderbook) => void;
+  onTrack: (orderbook: Orderbook) => void;
   onForget: (orderbook: Orderbook) => void;
 }
 
-export default function OrderbooksListItem({ orderbook, saved, onSelect, onSave, onForget }: OrderbooksListItemProps) {
+export default function OrderbooksListItem({ orderbook, onSelect, onTrack, onForget }: OrderbooksListItemProps) {
   const [ lastPrice, setLastPrice ] = useState('');
   const [ priceChange, setPriceChange ] = useState<number>();
 
@@ -44,16 +43,16 @@ export default function OrderbooksListItem({ orderbook, saved, onSelect, onSave,
 
   const onStarClick = useCallback((event: MouseEvent<HTMLSpanElement>) => {
     event.stopPropagation();
-    if (saved) {
+    if (orderbook.tracked) {
       onForget(orderbook);
     } else {
-      onSave(orderbook);
+      onTrack(orderbook);
     }
-  }, [ onForget, onSave, orderbook, saved ]);
+  }, [ onForget, onTrack, orderbook ]);
 
   return (
     <tr onClick={() => onSelect(orderbook)}>
-      <td className={saved ? 'text-primary' : ''}>
+      <td className={orderbook.tracked ? 'text-primary' : ''}>
         <span onClick={onStarClick}>★</span>
       </td>
       <td>{formatOrderbook(orderbook)}</td>
