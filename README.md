@@ -10,12 +10,6 @@ This is the repo for the web app of *The Orderbook DEX*.
 
   > We are working on a **full redesign** of the app which will improve the UX.
 
-* A way to create orderbooks
-
-  > Orderbooks can still be created through smart contract interaction, but right now they will not show up in the app, because the list of orderbooks is currently hardcoded.
-  >
-  > This is actually the main reason why this feature is not in yet. The app can't just list all orderbooks without some safeguards, because that could expose users to malicious users trying to deceive people into operating with orderbooks created using fake tokens.
-
 * A way to fetch existing open orders
 
   > The app stores user data only on the client side, so if you clear the browser data or open the app in a different browser or computer, it'll be like you opened the app for the first time.
