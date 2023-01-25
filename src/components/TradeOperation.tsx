@@ -1,8 +1,9 @@
 import './TradeOperation.scss';
 import { InsufficientFunds, Orderbook, Operator, RequestRejected, OperatorNotConnected } from '@theorderbookdex/orderbook-dex-webapi';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Button, Form, InputGroup, Nav, Spinner } from 'react-bootstrap';
+import { Alert, Button, Form, InputGroup, Nav, OverlayTrigger, Popover, Spinner } from 'react-bootstrap';
 import { formatContractSize, formatPriceTick, parseContractAmount, parsePrice } from '../utils/format';
+import { applyPercentage } from '../utils/math';
 
 enum OrderType {
   LIMIT = 'limit',
@@ -46,6 +47,7 @@ export default function TradeOperation({ orderbook }: TradeOperationProps) {
   const [ tradeType, setTradeType ] = useState(TradeType.BUY);
   const [ amount, setAmount ] = useState('');
   const [ price, setPrice ] = useState('');
+  const [ feePercentage, setFeePercentage ] = useState('0.1');
   const [ validated, setValidated ] = useState(false);
   const [ sending, setSending ] = useState(false);
   const [ feedback, setFeedback ] = useState(Feedback.NONE);
@@ -131,6 +133,17 @@ export default function TradeOperation({ orderbook }: TradeOperationProps) {
     if (amount === '' || price === '') return '';
     return baseToken.formatAmount(tradedToken.parseAmount(amount) * baseToken.parseAmount(price) / tradedToken.unit);
   }, [ amount, price, tradedToken, baseToken ]);
+
+  const fee = useMemo(() => {
+    if (!feePercentage) return '';
+    if (tradeType === TradeType.BUY) {
+      if (!amount) return '';
+      return applyPercentage(tradedToken, amount, feePercentage);
+    } else {
+      if (!totalPrice) return '';
+      return applyPercentage(baseToken, totalPrice, feePercentage);
+    }
+  }, [ amount, baseToken, feePercentage, totalPrice, tradeType, tradedToken ]);
 
   const contractSize = useMemo(() => formatContractSize(orderbook), [ orderbook ]);
   const priceTick = useMemo(() => formatPriceTick(orderbook), [ orderbook ]);
@@ -241,6 +254,23 @@ export default function TradeOperation({ orderbook }: TradeOperationProps) {
           <Form.Control type="number" readOnly value={totalPrice} />
           <InputGroup.Text>{baseToken.symbol}</InputGroup.Text>
         </InputGroup>
+        <InputGroup>
+          <FeeLabel orderType={orderType} feePercentage={feePercentage} />
+          { feePercentage ?
+            <Form.Control type="number" readOnly value={fee} />
+          :
+            <InputGroup.Text>
+              <Spinner animation="border" size="sm" />
+            </InputGroup.Text>
+          }
+          <InputGroup.Text>
+            { tradeType === TradeType.BUY ?
+              <>{tradedToken.symbol}</>
+            :
+              <>{baseToken.symbol}</>
+            }
+          </InputGroup.Text>
+        </InputGroup>
         <Button type="submit" variant={tradeType === TradeType.BUY ? 'success' : 'danger'} disabled={sending}>{tradeType}</Button>
 
         { feedback === Feedback.PLACING_ORDER ?
@@ -279,5 +309,36 @@ export default function TradeOperation({ orderbook }: TradeOperationProps) {
         }
       </Form>
     </div>
+  );
+}
+
+function FeeLabel({ orderType, feePercentage }: {
+  orderType: OrderType;
+  feePercentage: string;
+}) {
+  return (
+    <InputGroup.Text className={ feePercentage ? '' : 'flex-grow-1' }>
+      { orderType === OrderType.LIMIT ?
+        <OverlayTrigger
+          placement="top-end"
+          overlay={
+            <Popover>
+              <Popover.Header>Fee on Limit Orders</Popover.Header>
+              <Popover.Body>
+                <ul className="ps-3">
+                  <li className="mb-2">The fee is only applied when claiming a filled order.</li>
+                  <li>The fee applied will be the one at the time of claiming.</li>
+                </ul>
+              </Popover.Body>
+            </Popover>
+          }
+        >
+          <span>Fee<sup className="text-warning"><u>*</u></sup></span>
+        </OverlayTrigger>
+      :
+        <>Fee</>
+      }
+      { feePercentage && <small className="ms-2">({feePercentage}%)</small> }:
+    </InputGroup.Text>
   );
 }
