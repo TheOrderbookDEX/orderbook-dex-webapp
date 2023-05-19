@@ -1,12 +1,19 @@
 {
   "root": true,
-  "extends": [
-    "react-app",
-    "react-app/jest"
-  ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "project": "tsconfig.json"
   },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "ignorePatterns": [
+    "dist/**"
+  ],
   "rules": {
     "@typescript-eslint/no-floating-promises": "error"
   }
