@@ -116,7 +116,10 @@ export function WalletProvider({ children }: PropsWithChildren<{}>) {
         </Modal.Header>
         <Modal.Body>
           <p>The Orderbook DEX app requires you to deploy an Operator smart contract which operates on your behalf and you solely own.</p>
-          <p>It acts as wallet where you deposit the funds you wish to trade with. You can read more about this in the whitepaper.</p>
+          <p>
+            It acts as a wallet where you deposit the funds you wish to trade with. You can read more about this in
+            the <a href="https://orderbookdex.com/wp-content/uploads/whitepaper.pdf" rel="noreferrer" target="_blank">whitepaper</a>.
+          </p>
           <p>If you continue you'll be asked to sign the transaction creating your Operator.</p>
         </Modal.Body>
         <Modal.Footer>
