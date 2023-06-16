@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@theorderbookdex/orderbook-dex-test-server": "0.1.0-rc.17",
-    "@theorderbookdex/orderbook-dex-webapi": "1.0.0-rc.4",
+    "@theorderbookdex/orderbook-dex-webapi": "1.0.0-rc.5",
     "@types/node": "^20.2.6",
     "@types/react": "^18.2.11",
     "@types/react-dom": "^18.2.4",
