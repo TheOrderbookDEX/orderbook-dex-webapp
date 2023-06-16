@@ -47,7 +47,7 @@ export default function APILoader({ children }: PropsWithChildren<{}>) {
           <Modal.Body>
             <p><em>The Orderbook DEX</em> currently supports the following chains:</p>
             <ul style={{ padding: 'revert', margin: 'revert', listStyle: 'revert' }}>
-              <li>Goerli Testnet</li>
+              <li>Sepolia Testnet</li>
             </ul>
           </Modal.Body>
         </Modal>
